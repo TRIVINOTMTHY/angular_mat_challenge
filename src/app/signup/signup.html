@@ -1,0 +1,376 @@
+<div class="page-wrapper" [class.light]="!darkMode()">
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <mat-icon class="brand-icon">school</mat-icon>
+      <span class="brand-name">Trivino Survey</span>
+    </div>
+    <div class="nav-right">
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <mat-icon style="font-size:14px;width:14px;height:14px;">calendar_today</mat-icon>
+      Event Season 2026 · Open Registration
+    </div>
+    <h1 class="hero-title">Join the <span class="gradient-text">Trivino Survey</span></h1>
+    <p class="hero-sub">Register now to participate in our annual school event. Limited spots available for selected students.</p>
+
+    <!-- Progress bar showing slots -->
+    <div class="slots-wrap">
+      <div class="slots-info">
+        <span><span class="slots-info-left">Students registered</span></span>
+        <span class="slots-count"><strong>342</strong> / 500</span>
+      </div>
+      <mat-progress-bar mode="determinate" value="68" color="primary"></mat-progress-bar>
+      <span class="slots-pct">⚡ 158 spots remaining — register early</span>
+    </div>
+  </div>
+
+  <!-- ===== FORM CARD ===== -->
+  <div class="form-container">
+    <form [formGroup]="form" (ngSubmit)="onSubmit(form.value)">
+
+      <!-- SECTION 1: Student Info -->
+      <div class="section">
+        <div class="section-label">
+          <mat-icon>person_add</mat-icon>
+          Student Information
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>First Name</mat-label>
+          <mat-icon matPrefix class="field-icon">person</mat-icon>
+          <input matInput placeholder="e.g. John" formControlName="firstName">
+          @if (form.get('firstName')?.hasError('required') && form.get('firstName')?.touched) {
+            <mat-error>First name is required.</mat-error>
+          }
+          @if (form.get('firstName')?.hasError('minlength') && form.get('firstName')?.touched) {
+            <mat-error>Must be at least 2 characters.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Last Name</mat-label>
+          <mat-icon matPrefix class="field-icon">person</mat-icon>
+          <input matInput placeholder="e.g. Smith" formControlName="lastName">
+          @if (form.get('lastName')?.hasError('required') && form.get('lastName')?.touched) {
+            <mat-error>Last name is required.</mat-error>
+          }
+          @if (form.get('lastName')?.hasError('minlength') && form.get('lastName')?.touched) {
+            <mat-error>Must be at least 2 characters.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email Address</mat-label>
+          <mat-icon matPrefix class="field-icon">alternate_email</mat-icon>
+          <input matInput placeholder="you@example.com" formControlName="email" type="email">
+          @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
+            <mat-error>Email is required.</mat-error>
+          }
+          @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+            <mat-error>Enter a valid email address.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Phone Number</mat-label>
+          <mat-icon matPrefix class="field-icon">phone</mat-icon>
+          <input matInput placeholder="(123) 456-7890" formControlName="phone">
+          @if (form.get('phone')?.hasError('required') && form.get('phone')?.touched) {
+            <mat-error>Phone number is required.</mat-error>
+          }
+          @if (form.get('phone')?.hasError('invalidPhone') && form.get('phone')?.touched) {
+            <mat-error>Enter a valid phone number.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- SECTION 2: Academic & Personal -->
+      <div class="section">
+        <div class="section-label">
+          <mat-icon>school</mat-icon>
+          Academic Information
+        </div>
+
+        <span class="field-label">Gender</span>
+        <mat-radio-group formControlName="gender" class="radio-group">
+          <mat-radio-button value="male">Male</mat-radio-button>
+          <mat-radio-button value="female">Female</mat-radio-button>
+          <mat-radio-button value="nonbinary">Non-binary</mat-radio-button>
+          <mat-radio-button value="prefer_not">Prefer not to say</mat-radio-button>
+        </mat-radio-group>
+        @if (form.get('gender')?.invalid && submitted) {
+          <span class="custom-error">Please select your gender.</span>
+        }
+
+        <br>
+
+        <mat-form-field appearance="outline" class="full-width" style="margin-top:14px;">
+          <mat-label>Date of Birth</mat-label>
+          <mat-icon matPrefix class="field-icon">cake</mat-icon>
+          <input matInput [matDatepicker]="picker"
+                 [max]="maxDate"
+                 formControlName="dateOfBirth"
+                 placeholder="MM/DD/YYYY" readonly>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"
+            matTooltip="Must be born in 2010 or earlier"></mat-datepicker-toggle>
+          <mat-datepicker #picker startView="multi-year"></mat-datepicker>
+          @if (form.get('dateOfBirth')?.hasError('required') && submitted) {
+            <mat-error>Date of birth is required.</mat-error>
+          }
+          @if (form.get('dateOfBirth')?.hasError('tooYoung')) {
+            <mat-error>You must be born in 2010 or earlier to register.</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="two-col">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Grade Level</mat-label>
+            <mat-icon matPrefix class="field-icon">grade</mat-icon>
+            <mat-select formControlName="gradeLevel">
+              @for (g of gradeLevels; track g) {
+                <mat-option [value]="g">{{ g }}</mat-option>
+              }
+            </mat-select>
+            @if (form.get('gradeLevel')?.hasError('required') && submitted) {
+              <mat-error>Please select your grade.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>GPA</mat-label>
+            <mat-icon matPrefix class="field-icon">trending_up</mat-icon>
+            <mat-select formControlName="gpa">
+              @for (g of gpaRanges; track g) {
+                <mat-option [value]="g">{{ g }}</mat-option>
+              }
+            </mat-select>
+            @if (form.get('gpa')?.hasError('required') && submitted) {
+              <mat-error>Please select your GPA range.</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Primary Department / Subject</mat-label>
+          <mat-icon matPrefix class="field-icon">book</mat-icon>
+          <mat-select formControlName="department">
+            @for (d of departments; track d) {
+              <mat-option [value]="d">{{ d }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('department')?.hasError('required') && submitted) {
+            <mat-error>Please select a department.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- SECTION 3: Interests -->
+      <div class="section">
+        <div class="section-label">
+          <mat-icon>interests</mat-icon>
+          Interests & Activities
+        </div>
+
+        <!-- Interests — MatChips -->
+        <span class="field-label">Areas of Interest <span class="optional">(optional)</span></span>
+        <mat-chip-set class="chip-set">
+          @for (interest of interests_list; track interest) {
+            <mat-chip
+              [class.chip-selected]="isInterestSelected(interest)"
+              (click)="toggleInterest(interest)">
+              @if (isInterestSelected(interest)) {
+                <mat-icon style="font-size:13px;width:13px;height:13px;margin-right:3px;">check</mat-icon>
+              }
+              {{ interest }}
+            </mat-chip>
+          }
+        </mat-chip-set>
+      </div>
+
+      <!-- SECTION 4: Parent/Guardian Information -->
+      <div class="section">
+        <div class="section-label">
+          <mat-icon>family_restroom</mat-icon>
+          Parent/Guardian Information
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Parent/Guardian Name</mat-label>
+          <mat-icon matPrefix class="field-icon">person</mat-icon>
+          <input matInput placeholder="e.g. Jane Smith" formControlName="parentName">
+          @if (form.get('parentName')?.hasError('required') && form.get('parentName')?.touched) {
+            <mat-error>Parent/Guardian name is required.</mat-error>
+          }
+          @if (form.get('parentName')?.hasError('minlength') && form.get('parentName')?.touched) {
+            <mat-error>Must be at least 2 characters.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Parent/Guardian Email</mat-label>
+          <mat-icon matPrefix class="field-icon">alternate_email</mat-icon>
+          <input matInput placeholder="parent@example.com" formControlName="parentEmail" type="email">
+          @if (form.get('parentEmail')?.hasError('required') && form.get('parentEmail')?.touched) {
+            <mat-error>Parent email is required.</mat-error>
+          }
+          @if (form.get('parentEmail')?.hasError('email') && form.get('parentEmail')?.touched) {
+            <mat-error>Enter a valid email address.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Parent/Guardian Phone</mat-label>
+          <mat-icon matPrefix class="field-icon">phone</mat-icon>
+          <input matInput placeholder="(123) 456-7890" formControlName="parentPhone">
+          @if (form.get('parentPhone')?.hasError('required') && form.get('parentPhone')?.touched) {
+            <mat-error>Parent phone is required.</mat-error>
+          }
+          @if (form.get('parentPhone')?.hasError('invalidPhone') && form.get('parentPhone')?.touched) {
+            <mat-error>Enter a valid phone number.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- SECTION 5: School Policies -->
+      <div class="section">
+        <div class="section-label">
+          <mat-icon>policy</mat-icon>
+          School Policies
+        </div>
+
+        <div class="rules-list">
+          <div class="rule-item">
+            <mat-icon class="rule-icon">check_circle</mat-icon>
+            <span>I agree to adhere to the school's Code of Conduct</span>
+          </div>
+          <div class="rule-item">
+            <mat-icon class="rule-icon">check_circle</mat-icon>
+            <span>I understand the academic and disciplinary policies</span>
+          </div>
+          <div class="rule-item">
+            <mat-icon class="rule-icon">check_circle</mat-icon>
+            <span>I commit to attending scheduled events and activities</span>
+          </div>
+        </div>
+
+        <div class="checkbox-wrap">
+          <mat-checkbox formControlName="agreeToTerms" color="primary">
+            I agree to the <a href="#" class="link">School Policies</a>,
+            <a href="#" class="link">Code of Conduct</a>, and
+            <a href="#" class="link">Privacy Policy</a>
+          </mat-checkbox>
+        </div>
+        @if (form.get('agreeToTerms')?.invalid && submitted) {
+          <span class="custom-error">You must accept the policies to register.</span>
+        }
+      </div>
+
+      <!-- BUTTONS -->
+      <div class="button-row">
+        <button mat-flat-button type="submit" class="submit-btn">
+          <mat-icon style="margin-right:8px;">app_registration</mat-icon>
+          Complete Registration
+        </button>
+        <button mat-button type="button" class="reset-btn" (click)="onReset()">
+          <mat-icon style="margin-right:4px; font-size:16px;">refresh</mat-icon>
+          Clear Form
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- ===== SUCCESS CARD ===== -->
+  @if (submitted && form.valid) {
+    <div class="result-card">
+      <div class="result-header">
+        <div class="result-icon-wrap">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div>
+          <h2>Welcome, <span class="gradient-text">{{ firstName }} {{ lastName }}</span>!</h2>
+          <p>Your registration has been confirmed. We'll send details to your email.</p>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+      <br>
+
+      <div class="result-grid">
+        <div class="result-item">
+          <span class="result-label">Full Name</span>
+          <span class="result-value">{{ firstName }} {{ lastName }}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Email</span>
+          <span class="result-value">{{ email }}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Phone</span>
+          <span class="result-value">{{ phone }}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Gender</span>
+          <span class="result-value">{{ gender }}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Date of Birth</span>
+          <span class="result-value">{{ dateOfBirth | date:'mediumDate' }}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Grade Level</span>
+          <span class="result-value">{{ gradeLevel }}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Department</span>
+          <span class="result-value">{{ department }}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">GPA Range</span>
+          <span class="result-value">{{ gpa }}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Parent/Guardian Name</span>
+          <span class="result-value">{{ parentName }}</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Parent/Guardian Email</span>
+          <span class="result-value">{{ parentEmail }}</span>
+        </div>
+        @if (interests.length > 0) {
+          <div class="result-item" style="grid-column: span 2;">
+            <span class="result-label">Areas of Interest</span>
+            <span class="result-value">{{ interests.join(', ') }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ===== ERROR NOTICE ===== -->
+  @if (submitted && form.invalid) {
+    <div class="error-card">
+      <mat-icon>error_outline</mat-icon>
+      <p>Please fix the errors above before submitting.</p>
+    </div>
+  }
+
+  <div class="footer">
+    <span>© 2026 Trivino Survey · All rights reserved</span>
+    <div class="theme-footer">
+      <span class="theme-label">{{ darkMode() ? 'Dark' : 'Light' }}</span>
+      <mat-slide-toggle
+        [checked]="darkMode()"
+        (change)="toggleTheme()"
+        color="primary"
+        matTooltip="Toggle theme">
+      </mat-slide-toggle>
+    </div>
+  </div>
+</div>
